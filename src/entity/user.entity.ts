@@ -1,14 +1,24 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Order } from "./order.entity";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   uid: number;
 
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
+
   @Column()
   name: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column()
@@ -23,6 +33,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ unique: true })
+  @Column({ type: "bigint" })
   phone: number;
+
+  @CreateDateColumn({ type: "timestamp" })
+  joinedAt: number;
 }

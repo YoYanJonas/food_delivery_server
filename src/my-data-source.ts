@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { DataSource } from "typeorm";
 
 export const MyDataSource = new DataSource({
@@ -7,6 +8,7 @@ export const MyDataSource = new DataSource({
   username: "root",
   password: "root",
   database: "food_delivery",
+  timezone: "Z",
   synchronize: true,
   logging: false,
   entities: ["src/entity/*.ts"],
