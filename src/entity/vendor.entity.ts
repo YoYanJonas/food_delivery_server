@@ -1,4 +1,3 @@
-import { Order } from "./order.entity";
 import {
   Column,
   PrimaryGeneratedColumn,
@@ -9,6 +8,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { Menu } from "./menu.entity";
+import { Order } from "./order.entity";
 
 @Entity()
 export class Vendor {
@@ -25,20 +25,27 @@ export class Vendor {
   @Column({ select: false })
   password: string;
 
-  @Column()
+  @Column({ nullable: false })
   name: string;
 
-  @Column({ type: "bigint" })
+  @Column({ type: "bigint", nullable: false, unique: true })
   phone: number;
 
   @Column()
   city: string;
 
-  @Column()
-  location: string;
+  @Column({ type: "float", nullable: false })
+  latitude: number;
 
-  @Column({ unique: true, nullable: true })
-  ranking: number;
+  @Column({ type: "float", nullable: false })
+  longitude: number;
+
+  @Column({ type: "bigint", unique: true, nullable: true, default: 0 })
+  revenue: number;
+
+  get Revenue_Getter(): number {
+    return this.revenue;
+  }
 
   @Column({ unique: true })
   email: string;

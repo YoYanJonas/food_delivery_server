@@ -23,7 +23,8 @@ export const UserAuthMiddleware: RequestHandler = async (req, res, next) => {
         name: true,
         password: true,
         city: true,
-        location: true,
+        latitude: true,
+        longitude: true,
         points: true,
         email: true,
         phone: true,
@@ -53,13 +54,15 @@ export const VendorAuthMiddleware: RequestHandler = async (req, res, next) => {
 
     const vendor = await MyDataSource.getRepository(Vendor).findOne({
       where: { vid: payload.id },
+      relations: { menu: true },
       select: {
         vid: true,
         name: true,
         password: true,
         city: true,
-        location: true,
-        ranking: true,
+        latitude: true,
+        longitude: true,
+        revenue: true,
         email: true,
         phone: true,
         image: true,

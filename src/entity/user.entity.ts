@@ -15,7 +15,7 @@ export class User {
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 
-  @Column()
+  @Column({ nullable: false })
   name: string;
 
   @Column({ select: false })
@@ -24,18 +24,25 @@ export class User {
   @Column()
   city: string;
 
-  @Column()
-  location: string;
+  @Column({ type: "float" })
+  latitude: number;
 
-  @Column()
+  @Column({ type: "float" })
+  longitude: number;
+
+  @Column({ nullable: true })
   points: number;
+
+  get Point_getter(): number {
+    return this.points;
+  }
 
   @Column({ unique: true })
   email: string;
 
-  @Column({ type: "bigint" })
+  @Column({ type: "bigint", nullable: false, unique: true })
   phone: number;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: "datetime" })
   joinedAt: number;
 }

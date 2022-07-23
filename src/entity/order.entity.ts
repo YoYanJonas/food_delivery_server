@@ -16,34 +16,34 @@ export class Order {
   @PrimaryGeneratedColumn()
   oid: number;
 
-  @ManyToOne(() => User, (user) => user.orders)
+  @ManyToOne(() => User, (user) => user.orders, { nullable: false })
   user: User;
 
-  @ManyToOne(() => OrderStatus, (status) => status.orders)
+  @ManyToOne(() => OrderStatus, (status) => status.orders, { nullable: false })
   status: OrderStatus;
 
   @OneToMany(() => OrderItem, (item) => item.order)
   items: OrderItem[];
 
-  @ManyToOne(() => Vendor, (vendor) => vendor.orders)
+  @ManyToOne(() => Vendor, (vendor) => vendor.orders, { nullable: false })
   vendor: Vendor;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "datetime" })
   creationTime: number;
 
-  @Column()
+  @Column({ type: "datetime", nullable: true })
   orderedTime: number;
 
-  @Column()
+  @Column({ type: "datetime", nullable: true })
   preparedTime: number;
 
-  @Column()
+  @Column({ type: "datetime", nullable: true })
   takenOverTime: number;
 
-  @Column()
+  @Column({ default: 0 })
   isPaid: boolean;
 
-  @Column()
+  @Column({ default: 0 })
   price: number;
 
   @Column({ nullable: true })

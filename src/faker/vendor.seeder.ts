@@ -15,7 +15,7 @@ MyDataSource.initialize()
         phone: parseInt("989" + faker.random.numeric(9)),
         city: faker.address.cityName(),
         location: `${faker.random.numeric(5)}, ${faker.random.numeric(5)}}`,
-        ranking: parseInt(faker.random.numeric()),
+        revenue: parseInt(faker.random.numeric()),
         email: faker.internet.email(),
         image: faker.image.food(640, 640, false),
       });

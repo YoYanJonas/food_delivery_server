@@ -16,7 +16,9 @@ export class MenuItems {
   @ManyToOne(() => Menu, (menu) => menu.menug)
   menu: Menu;
 
-  @OneToMany(() => MenuItem, (items) => items.menug)
+  @OneToMany(() => MenuItem, (items) => items.menug, {
+    cascade: true,
+  })
   items: MenuItem[];
 
   @Column()
@@ -25,6 +27,7 @@ export class MenuItems {
   @Column()
   image: string;
 
-  @Column({ unique: true })
-  remaining: number;
+  get Remaining_Getter(): number {
+    return this.items.reduce((a, item) => a + item.Remaining_Getter, 0);
+  }
 }

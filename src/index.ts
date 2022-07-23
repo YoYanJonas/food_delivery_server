@@ -1,13 +1,19 @@
 import express, { json } from "express";
 import cors from "cors";
 import { MyDataSource } from "./my-data-source";
+import { createClient } from "redis";
 import { routes } from "./routes";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
 
-MyDataSource.initialize().then(() => {
+export const RedisClient = createClient({
+  url: "redis://redis:6379",
+});
+
+MyDataSource.initialize().then(async () => {
+  await RedisClient.connect();
   const app = express();
 
   app.use(cookieParser());

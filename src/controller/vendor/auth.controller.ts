@@ -5,59 +5,71 @@ import bcryptjs from "bcryptjs";
 import { sign } from "jsonwebtoken";
 
 export const reigsterVendor: RequestHandler = async (req, res) => {
-  const body = req.body;
+  try {
+    if (req) {
+      const body = req.body;
 
-  if (body.password !== body.password_confirm) {
-    return res.status(400).send({
-      message: "passwords do not match",
-    });
+      if (body.password !== body.password_confirm) {
+        return res.status(400).send({
+          message: "passwords do not match",
+        });
+      }
+      delete body.password_confirm;
+
+      if (body.name && body.phone && body.longitude && body.latitude) {
+        const vendor = await MyDataSource.getRepository(Vendor).save({
+          ...body,
+          password: await bcryptjs.hash(body.password, 10),
+        });
+        delete vendor.password;
+
+        res.send(vendor);
+      }
+    }
+  } catch (e) {
+    res.send(e);
   }
-  delete body.password_confirm;
-
-  const vendor = await MyDataSource.getRepository(Vendor).save({
-    ...body,
-    password: await bcryptjs.hash(body.password, 10),
-  });
-  delete vendor.password;
-
-  res.send(vendor);
 };
 
 //Login
 
 export const LoginVendor: RequestHandler = async (req, res) => {
-  const vendor = await MyDataSource.getRepository(Vendor).findOne({
-    select: { vid: true, password: true },
-    where: {
-      email: req.body.email,
-    },
-  });
+  if (req.body.email && req.body.password) {
+    const vendor = await MyDataSource.getRepository(Vendor).findOne({
+      select: { vid: true, password: true },
+      where: {
+        email: req.body.email,
+      },
+    });
 
-  if (!vendor) {
-    return res.status(400).send({ message: "invalid credentials." });
+    if (!vendor) {
+      return res.status(400).send({ message: "invalid credentials." });
+    }
+
+    if (!(await bcryptjs.compare(req.body.password, vendor.password))) {
+      return res
+        .status(400)
+        .send({ message: "password is incorrect. check plz." });
+    }
+
+    const token = sign(
+      {
+        id: vendor.vid,
+      },
+      process.env.SECRET_KEY
+    );
+
+    res.cookie("vendor_jwt", token, {
+      httpOnly: true,
+      maxAge: 604800000, //7days
+    });
+
+    res.send({
+      message: "Vendor logged in. you have the token now for 7 days.",
+    });
+  } else {
+    res.send({ message: "please enter your credentials." });
   }
-
-  if (!(await bcryptjs.compare(req.body.password, vendor.password))) {
-    return res
-      .status(400)
-      .send({ message: "password is incorrect. check plz." });
-  }
-
-  const token = sign(
-    {
-      id: vendor.vid,
-    },
-    process.env.SECRET_KEY
-  );
-
-  res.cookie("vendor_jwt", token, {
-    httpOnly: true,
-    maxAge: 604800000, //7days
-  });
-
-  res.send({
-    message: "Vendor logged in. you have the token now for 7 days.",
-  });
 };
 
 //
@@ -81,7 +93,8 @@ export const UpdateVendorInfo: RequestHandler = async (req, res) => {
     name: req.body.name,
     phone: req.body.phone,
     city: req.body.city,
-    location: req.body.location,
+    latitude: req.body.latitude,
+    longitude: req.body.longitude,
     email: req.body.email,
     image: req.body.image,
   });

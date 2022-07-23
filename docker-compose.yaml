@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   backend:
     build: .
@@ -6,18 +7,37 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+    links:
+      - "db"
     depends_on:
+      - Redis
       - db
+    networks:
+      - try_a_new
 
   db:
     image: mysql:8
-    restart: always
+    restart: unless-stopped
     cap_add:
       - SYS_NICE
     environment:
       MYSQL_DATABASE: food_delivery
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - .dbdata:/var/lib/mysql
+      - dbdata:/var/lib/mysql
     ports:
       - "3306:3306"
+    networks:
+      - try_a_new
+
+  Redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - try_a_new
+volumes:
+  dbdata:
+networks:
+  try_a_new:
+    driver: bridge
